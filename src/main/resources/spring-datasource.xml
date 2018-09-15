@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<beans xmlns="http://www.springframework.org/schema/beans"  
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  
+    xmlns:context="http://www.springframework.org/schema/context"  
+    xmlns:tx="http://www.springframework.org/schema/tx"  
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xsi:schemaLocation="  
+            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd  
+            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+            http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+     <context:component-scan base-package="com.johnfnash.learn.pro.dashboardserver" />
+     <context:property-placeholder location="classpath:context.properties"
+        ignore-unresolvable="true" />
+            
+     <!-- 数据库连接池配置 -->
+     <bean id="dataSourceTask" name="dataSourceTask" class="com.mchange.v2.c3p0.ComboPooledDataSource">  
+        <!-- 指定连接数据库的驱动-->  
+        <property name="driverClass" value="${db.task.jdbc.driverClassName}"/>  
+        <!-- 指定连接数据库的URL-->  
+        <property name="jdbcUrl" value="${db.task.jdbc.url}"/>  
+        <!-- 指定连接数据库的用户名-->  
+        <property name="user" value="${db.task.jdbc.user}"/>  
+        <!-- 指定连接数据库的密码-->  
+        <property name="password" value="${db.task.jdbc.password}"/>  
+        <!-- 指定连接池中保留的最大连接数. Default:15-->  
+        <property name="maxPoolSize" value="${db.task.jdbc.maxPoolSize}"/>  
+        <!-- 指定连接池中保留的最小连接数-->  
+        <property name="minPoolSize" value="${db.task.jdbc.minPoolSize}"/>  
+        <!-- 指定连接池的初始化连接数  取值应在minPoolSize 与 maxPoolSize 之间.Default:3-->  
+        <property name="initialPoolSize" value="${db.task.jdbc.initialPoolSize}"/>  
+        <!-- 最大空闲时间,60秒内未使用则连接被丢弃。若为0则永不丢弃。 Default:0-->  
+        <property name="maxIdleTime" value="${db.task.jdbc.maxIdleTime}"/>  
+        <!-- 当连接池中的连接耗尽的时候c3p0一次同时获取的连接数. Default:3-->  
+        <property name="acquireIncrement" value="${db.task.jdbc.acquireIncrement}"/>  
+        <!-- JDBC的标准,用以控制数据源内加载的PreparedStatements数量。但由于预缓存的statements属于单个connection
+        	而不是整个连接池所以设置这个参数需要考虑到多方面的因数.如果maxStatements与maxStatementsPerConnection均为0,则缓存被关闭。Default:0-->  
+        <property name="maxStatements" value="${db.task.jdbc.maxStatements}"/>  
+        <!-- 每60秒检查所有连接池中的空闲连接.Default:0 -->  
+        <property name="idleConnectionTestPeriod" value="${db.task.jdbc.idleConnectionTestPeriod}"/>
+        <!--连接池获取新连接的时间，超时后将 抛出SQLException,如设为0则无限期等待。单位毫秒。Default: 0 -->
+		<property name="checkoutTimeout" value="${db.task.jdbc.checkoutTimeout}"/>  
+    </bean>
+     
+     <bean id="dataSourceEnv" name="dataSourceEnv" class="com.mchange.v2.c3p0.ComboPooledDataSource">  
+        <!-- 指定连接数据库的驱动-->  
+        <property name="driverClass" value="${db.lcmyw.jdbc.driverClassName}"/>  
+        <!-- 指定连接数据库的URL-->  
+        <property name="jdbcUrl" value="${db.lcmyw.jdbc.url}"/>  
+        <!-- 指定连接数据库的用户名-->  
+        <property name="user" value="${db.lcmyw.jdbc.user}"/>  
+        <!-- 指定连接数据库的密码-->  
+        <property name="password" value="${db.lcmyw.jdbc.password}"/>  
+        <!-- 指定连接池中保留的最大连接数. Default:15-->  
+        <property name="maxPoolSize" value="${db.lcmyw.jdbc.maxPoolSize}"/>  
+        <!-- 指定连接池中保留的最小连接数-->  
+        <property name="minPoolSize" value="${db.lcmyw.jdbc.minPoolSize}"/>  
+        <!-- 指定连接池的初始化连接数  取值应在minPoolSize 与 maxPoolSize 之间.Default:3-->  
+        <property name="initialPoolSize" value="${db.lcmyw.jdbc.initialPoolSize}"/>  
+        <!-- 最大空闲时间,60秒内未使用则连接被丢弃。若为0则永不丢弃。 Default:0-->  
+        <property name="maxIdleTime" value="${db.lcmyw.jdbc.maxIdleTime}"/>  
+        <!-- 当连接池中的连接耗尽的时候c3p0一次同时获取的连接数. Default:3-->  
+        <property name="acquireIncrement" value="${db.lcmyw.jdbc.acquireIncrement}"/>  
+        <!-- JDBC的标准,用以控制数据源内加载的PreparedStatements数量。但由于预缓存的statements属于单个connection
+        	而不是整个连接池所以设置这个参数需要考虑到多方面的因数.如果maxStatements与maxStatementsPerConnection均为0,则缓存被关闭。Default:0-->  
+        <property name="maxStatements" value="${db.lcmyw.jdbc.maxStatements}"/>  
+        <!-- 每60秒检查所有连接池中的空闲连接.Default:0 -->  
+        <property name="idleConnectionTestPeriod" value="${db.lcmyw.jdbc.idleConnectionTestPeriod}"/>
+        <!--连接池获取新连接的时间，超时后将 抛出SQLException,如设为0则无限期等待。单位毫秒。Default: 0 -->
+		<property name="checkoutTimeout" value="${db.lcmyw.jdbc.checkoutTimeout}"/>  
+    </bean>
+    
+    <bean id="dataSource" class="com.johnfnash.learn.pro.dashboardserver.core.DynamicDataSource">
+    	<property name="targetDataSources">
+    		<map key-type="java.lang.String">
+    			<entry key="dataSourceTask" value-ref="dataSourceTask"></entry>
+    			<entry key="dataSourceEnv" value-ref="dataSourceEnv"></entry>
+    		</map>
+    	</property>
+    	<property name="defaultTargetDataSource" ref="dataSourceEnv"></property>
+    </bean>
+    
+    <!-- spring和MyBatis完美整合，不需要mybatis的配置映射文件 -->
+     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+     	<property name="dataSource" ref="dataSource" />
+     	<!-- 自动扫描mapping.xml文件 -->
+     	<property name="mapperLocations" value="classpath*:/mapper_*/*.xml"/>
+     </bean>
+     
+     <!-- DAO接口所在包名，Spring会自动查找其下的类 -->
+     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+     	<property name="basePackage" value="com.johnfnash.learn.pro.dashboardserver.dao" />
+     	<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+     </bean>
+     
+     <!-- 配置事物管理器 -->
+     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+     	<property name="dataSource" ref="dataSource" />
+     </bean>
+     
+     <!-- 拦截器方式配置事物 -->
+     <tx:advice id="transactionAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="add*" propagation="REQUIRED" />
+			<tx:method name="insert*" propagation="REQUIRED" />
+			<tx:method name="update*" propagation="REQUIRED" />
+			<tx:method name="delete*" propagation="REQUIRED" />
+			
+			<tx:method name="get*" propagation="SUPPORTS" read-only="true" />
+			<tx:method name="find*" propagation="SUPPORTS" read-only="true" />
+			<tx:method name="select*" propagation="SUPPORTS" read-only="true" />
+		</tx:attributes>     	
+     </tx:advice>
+     
+     <!-- spring aop事物管理 -->
+     <aop:config>
+	<aop:pointcut id="transactionPointcut" 
+     			expression="execution(* com.johnfnash.learn.pro.dashboardserver.service..*Impl.*(..))" />
+        <!-- 设置order的值为2，使得数据库事物开启在数据源切换之后，否则数据源切换不会达到效果  -->
+       <aop:advisor pointcut-ref="transactionPointcut" advice-ref="transactionAdvice" order="2"/>
+     </aop:config>
+     
+     <!-- 数据源动态切换切面配置 -->
+     <aop:config>
+	    <aop:aspect id="dataSourceAspect" ref="dataSourceInterceptor" order="1">
+			<!-- 拦截所有service实现类的方法 -->
+            <aop:pointcut id="dataSourcePointcut" 
+            	     expression="execution(* com.johnfnash.learn.pro.dashboardserver.service..*Impl.*(..))"/>
+                <aop:before pointcut-ref="dataSourcePointcut" method="intercept" />           
+	    </aop:aspect>
+      </aop:config>
+     
+     <!-- 数据源动态切换实体 -->
+     <bean id="dataSourceInterceptor" class="com.johnfnash.learn.pro.dashboardserver.core.DynamicDataSourceInterceptor"/>
+     
+</beans>
